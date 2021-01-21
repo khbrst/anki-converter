@@ -67,19 +67,12 @@ fs.readdir(__dirname + '/input/', (err, files) => {
 
           const examples = mean.getElementsByClassName('item_example')
           for (const example of examples) {
-            const origin = example.getElementsByClassName('origin')[0].textContent
-            const translate = example.getElementsByClassName('translate')[0].textContent
-
-            let exampleJson = {
-              origin: origin,
-              translate: translate
+            const exampleJson = getExampleJsonFromElement(example)
+            if (exampleJson) {
+              meanJson.examples.push(exampleJson)
+              wordCsv.mean += exampleJson.origin + '\n'
+              wordCsv.mean += exampleJson.translate + '\n'
             }
-            meanJson.examples.push(exampleJson)
-            wordCsv.mean += origin + '\n'
-            wordCsv.mean += translate + '\n'
-
-            verbose && console.log('    ' + origin)
-            verbose && console.log('    ' + translate)
           }
 
           meanNum++
@@ -96,3 +89,23 @@ fs.readdir(__dirname + '/input/', (err, files) => {
     })
   }
 })
+
+function getExampleJsonFromElement(example) {
+  let origin = example.getElementsByClassName('origin')[0]
+  let translate = example.getElementsByClassName('translate')[0]
+
+  if (origin === undefined || translate === undefined) {
+    return
+  }
+
+  origin = origin.textContent.trim()
+  translate = translate.textContent.trim()
+
+  verbose && console.log('    ' + origin)
+  verbose && console.log('    ' + translate)
+
+  return {
+    origin: origin,
+    translate: translate
+  }
+}
